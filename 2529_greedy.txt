@@ -1,0 +1,70 @@
+/*
+
+https://www.acmicpc.net/problem/2529
+
+백준 온라인 저지 2529번 문제: 부등호
+
+*/
+
+#include <stdio.h>
+
+int op[10], k;
+void print_max();
+void print_min();
+
+int main()
+{
+	int i;
+
+	scanf("%d", &k);
+	for (i = 0; i<k; i++)
+		scanf(" %c", &op[i]);
+
+	print_max();
+	print_min();
+
+	return 0;
+}
+
+void print_max()
+{
+	int i, j, n = 0;
+	int top = 9;
+
+	for (i = 0; i<k; i++)
+	{
+		if (op[i] == '>')
+		{
+			for (j = top - n; j <= top; j++) printf("%d", j); // '<'의 개수만큼 순차적으로 커지는 최대값 출력
+			top = top - n - 1; // top의 값 바꿔주고
+			n = 0; // 개수 초기화
+		}
+		else
+			n++;
+	}
+
+	for (i = top - n; i <= top; i++) printf("%d", i); // 나머지값 오름차순으로 출력 ('<'에 들어갈 값이니까)
+	printf("\n");
+}
+
+void print_min()
+{
+	int i, j, n = 0;
+	int top = 0;
+
+	for (i = 0; i<k; i++)
+	{
+		if (op[i] == '<')
+		{
+			for (j = top + n; j >= top; j--) printf("%d", j); // '>'의 개수만큼 순차적으로 작아지는 최솟값 출력
+			top = top + n + 1; // top의 값 바꿔주고
+			n = 0; // 개수 초기화
+		}
+		else
+			n++;
+	}
+
+	for (i = top + n; i >= top; i--) printf("%d", i); // 나머지 값 내림차순으로 출력 ( '>'에 들어갈 값이니까)
+	printf("\n");
+}
+

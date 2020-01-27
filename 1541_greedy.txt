@@ -1,0 +1,61 @@
+/*
+
+https://www.acmicpc.net/problem/1541
+
+백준 온라인 저지 1541번 문제: 잃어버린 괄호
+
+*/
+
+#include <stdio.h>
+#include <string.h>
+
+int main()
+{
+	char exp[50];
+	int len, iom, i;
+	int c = 1, p = 0, q = 0, min = 0; // 괄호를 제거하고 최솟값이 되려면 마이너스 이후의 플러스를 최대한 묶어서 계산해야 함
+
+	scanf("%s", &exp);
+
+	len = strlen(exp);
+	for (iom = 0; iom<len; iom++)
+		if (exp[iom] == '-')
+			break; // 마이너스 부호 위치를 탐색
+
+	for (i = iom - 1; i >= 0; i--) // 마이너스 부호 기준 왼쪽 수 계산
+	{
+		if (exp[i] == '+')
+			c = 1; // 플러스 부호 나오면 자리수 리셋
+		else if (exp[i] == '(' || exp[i] == ')')
+			continue; // 괄호 나오면 continue
+		else {
+			p += (exp[i] - 48) * c; // 자리수만큼 곱해서 더해주고
+			c *= 10; // 자리수 하나 올려줌
+		}
+	}
+
+	c = 1; // 자리수 리셋
+
+	for (i = len - 1; i >= iom; i--) // 마이너스 부호 기준 오른쪽 수 계산
+	{
+		if (exp[i] == '+')
+			c = 1; // 플러스 부호 나오면 자리수 리셋
+		
+		else if (exp[i] == '-') {
+			min += -q; // 지금까지 더한 수에 마이너스 부호 붙여 더함
+			q = 0; 
+			c = 1; // 리셋
+		}
+		else if (exp[i] == '(' || exp[i] == ')')
+			continue; // 괄호 나오면 continue
+		
+		else {
+			q += (exp[i] - 48) * c;
+			c *= 10;
+		}
+	}
+
+	printf("%d", p + min); // 플러스 값과 마이너스의 합을 더해서 출력
+
+	return 0;
+}

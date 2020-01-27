@@ -1,0 +1,63 @@
+/*
+
+https://www.acmicpc.net/problem/2352
+
+백준 온라인 저지 2352번 문제: 반도체 설계
+
+*/
+
+#include <stdio.h>
+#include <string.h>
+#define MAX 40000
+
+int lower_bound(int[], int, int); // ★최장 증가 수열: LIS (Longest Increasing Subsequence) 알고리즘 사용
+
+int main()
+{
+	int num[MAX], lb[MAX];
+	int n, i, len, index;
+
+	scanf("%d", &n);
+
+	for (i = 0; i < n; i++)
+		scanf("%d", &num[i]);
+	
+	lb[0] = num[0];
+	len = 1;
+
+	for (i = 1; i < n; i++)
+	{
+		if (num[i] < lb[0])
+			lb[0] = num[i]; // 맨 앞의 수보다 작으면 바꿔줌
+		else if (num[i] > lb[len - 1]) {
+			lb[len] = num[i]; // 현재 맨 끝에 수보다 클 때 그 뒤에 넣어주고
+			len++; // 길이에 +1 (★길이에 초점. 값은 원하는 최장 증가 수열이 아닐 수도 있음)
+		}
+		else {
+			lb[lower_bound(lb, num[i], len)] = num[i]; // 그 외에는 lb의 lower bound에 넣어줌
+		}
+	}
+
+	printf("%d", len);
+
+	return 0;
+}
+
+int lower_bound(int arr[], int target, int size) // 현재 배열 순서에서 들어갈 수 있는 곳 찾는 함수 (오름차순일 때)
+{
+	int start, end, mid;
+	
+	start = 0, end = size;
+
+	while (end > start) {
+		mid = (start + end) / 2;
+		if (arr[mid] >= target) {
+			end = mid;
+		}
+		else {
+			start = mid + 1;
+		}
+	}
+
+	return end;
+}
