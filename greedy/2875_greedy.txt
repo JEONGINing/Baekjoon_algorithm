@@ -1,0 +1,45 @@
+/*
+
+https://www.acmicpc.net/problem/2875
+
+백준 온라인 저지 2875번 문제: 대회 or 인턴
+
+*/
+
+#include <stdio.h>
+
+int main()
+{
+    int n,m,k;
+    int team = 0, left = 0, team_t = 0;
+    scanf("%d %d %d", &n,&m,&k);
+    
+    if(n==m*2)
+        team = m; // 짝이 딱 맞을 때
+    else if(n>m*2) 
+    {
+        team = m;
+        left = n - m*2; // 최대한 팀을 결성해도 여학생 수가 남을 때
+    }
+    else
+    {
+        team = n/2;
+        left = (n-team*2) + (m-team); // 최대한 팀을 결성해도 남학생 수가 남을 때
+    }
+    
+    team_t = 3 * team; // 남녀 포함한 인원 수
+    
+    while(left>0 && k>0) // 팀에 안 들어간 인원에서 k만큼 인턴쉽에 포함
+    {
+        k--;
+        left--;
+    }
+    
+    if(k>0)
+        team_t -= k; // 아직 인턴쉽 인원이 더 있다면 남녀 포함 인원 수에서 뺌
+    
+    team = team_t / 3; // 이후 남녀 포함 인원 수를 3으로 나눈 몫이 최댓값
+    printf("%d",team);
+    
+    return 0;
+}

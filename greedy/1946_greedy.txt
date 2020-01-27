@@ -1,0 +1,83 @@
+/*
+
+https://www.acmicpc.net/problem/1946
+
+백준 온라인 저지 1946번 문제: 신입 사원
+
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 100000
+
+typedef struct _Job {
+	int paper;
+	int interview;
+} Job; 
+
+int compare(const void *a, const void *b);
+int max_people(Job*, int);
+
+int main()
+{
+    Job job[MAX];
+    int max[20]; // 케이스 별 최대 인원
+    int t, n, i, j;
+    
+    scanf("%d",&t);
+    
+    for(i=0; i<t; i++)
+    {
+        scanf("%d",&n);
+        
+        for(j=0; j<n; j++)
+            scanf("%d %d", &job[j].paper, &job[j].interview);
+        
+        qsort(job, n, sizeof(Job), compare); // 서류 순위 기준으로 오름차순
+        max[i] = max_people(job, n); // 선발 최대 인원 수 저장
+    }
+    
+    for(i=0; i<t; i++)
+        printf("%d\n",max[i]);
+    
+    return 0;
+    
+}
+
+int compare(const void *A, const void  *B)
+{
+	Job* ptrA = (Job*)A;
+	Job* ptrB = (Job*)B;
+
+	if (ptrA->paper < ptrB->paper)
+		return -1;
+	else
+		return 1;
+}
+
+int max_people(Job* a, int s)
+{
+    int cnt = s;
+    int i = 0, j;
+    
+    while (i<s)
+    {
+        if(a[i].paper == 1 || a[i].interview == 1) // 1위면 무조건 선발
+        {
+            i++;
+            continue;
+        }
+        
+        for(j=0; j<i; j++)
+        {
+            if(a[i].interview > a[j].interview) // 서류 점수가 상위에 있는 사람과 비교했을 때 면접 점수까지 딸리면 그 사람은 선발x 
+            {
+                cnt--;
+                break;
+            }
+        }
+        i++;
+    }
+    
+    return cnt;
+}

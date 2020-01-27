@@ -1,0 +1,45 @@
+/*
+
+https://www.acmicpc.net/problem/11047
+
+백준 온라인 저지 11047번 문제: 동전 0
+
+*/
+
+#include <stdio.h>
+
+int main()
+{
+    int n,k,i,d_coin,temp;
+    int count = 0;
+    int coin[11] = {};
+
+    scanf("%d %d",&n,&k); // n: 동전 종류의 수 (각 종류의 개수는 무제한), k: 구하고자 하는 값
+
+    for(i=1; i<=n; i++)
+        scanf("%d",&coin[i]); // n가지 동전의 가치 오름차순으로 입력 (정렬할 필요 x)
+
+    for(i=n; i>=1; i--) // 큰 수부터
+    {
+        if(k>=coin[i]) // 구하고자 하는 값과 같거나 작은 가장 큰 동전 가치 탐색
+        {
+            d_coin = i;
+            break;
+        }
+    }
+
+    temp = k;
+    while(temp != 0)
+    {
+        if(temp>=coin[d_coin])
+        {
+        count += temp / coin[d_coin]; // 몫을 동전 개수로 카운트
+        temp %= coin[d_coin--]; // 나머지는 마저 계산할 값
+        }
+        else
+            d_coin--; // 남은 값보다 동전 단위가 클 때
+    }
+
+    printf("%d",count);
+    return 0;
+}

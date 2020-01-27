@@ -1,0 +1,37 @@
+/*
+
+https://www.acmicpc.net/problem/5585
+
+백준 온라인 저지 5585번 문제: 거스름돈
+
+
+>> 파이썬으로 작성
+
+*/
+
+count = 0;
+money = int(input())
+change = 1000 - money // 거스름돈
+
+if change>=500:
+    count += int(change / 500) // 몫은 카운트
+    change %= 500 // 나머지는 취함
+
+if change>=100:
+    count += int(change / 100)
+    change %= 100
+
+if change>=50:
+    count += int(change / 50)
+    change %= 50
+
+if change>=10:
+    count += int(change / 10)
+    change %= 10
+
+if change>=5:
+    count += int(change / 5)
+    change %= 5
+
+count += change
+print(count)

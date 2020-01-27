@@ -1,0 +1,39 @@
+/*
+
+https://www.acmicpc.net/problem/2217
+
+백준 온라인 저지 2217번: 로프
+
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 100001
+
+int compare(const void *a, const void *b);
+
+int main()
+{
+    int n,i,max=0;
+    int weight[MAX];
+    scanf("%d",&n); // 로프 개수
+    for(i=0; i<n; i++)
+        scanf("%d",&weight[i]); // 각 로프가 버틸 수 있는 무게
+    
+    qsort(weight,n,sizeof(int),compare); // 내림차순 정렬
+    
+    for(i=0; i<n; i++)
+    {
+        if(max<weight[i]*(i+1))
+            max = weight[i]*(i+1); // 자신보다 큰 무게를 갖는 로프를 카운트에 자신의 무게만큼 곱한 것이 각각의 최댓값
+    }
+    
+    printf("%d",max);
+    
+    return 0;
+}
+
+int compare(const void *a, const void *b)
+{
+    return *(int *)b - *(int *)a;
+}
