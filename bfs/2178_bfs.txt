@@ -1,0 +1,64 @@
+/*
+
+https://www.acmicpc.net/problem/2178
+
+백준 온라인 저지 2178번: 미로 탐색
+
+*/
+
+#define MAX 101
+#include <stdio.h>
+
+typedef struct queue // 위치와 이동 칸 수 저장한 구조체
+{
+	int x, y;
+	int count;
+} queue;
+
+int miro[MAX][MAX] = { 0, }; // 미로 정보
+int visit[MAX][MAX] = { 0, }; // 방문 정보
+queue q[10001];
+
+void BFS(int N, int M) {
+	int front = 0, rear = 0, px, py, pc;
+	int mx[4] = { 1, -1, 0, 0 }; // x이동
+	int my[4] = { 0, 0, 1, -1 }; // y이동 -> 상하좌우 이동 경우의 수 배열에 저장
+
+	visit[1][1] = 1;
+	q[0].x = 1; q[0].y = 1; q[0].count = 1;
+	rear++; // 시작점 초기화
+
+	while (front < rear) {
+		px = q[front].x; py = q[front].y; pc = q[front].count;
+		front++;
+		for (i = 0; i < 4; i++) { // 상 하 좌 우: 총 4가지 경우
+			if (miro[px + mx[i]][py + my[i]] == 1 && visit[px + mx[i]][py + my[i]] == 0) { // 이동할 수 있는 칸이고 방문하지 않았을 때
+				q[rear].x = px + mx[i]; 
+                			q[rear].y = py + my[i]; 
+                			q[rear].count = pc + 1;
+				visit[px + mx[i]][py + my[i]] = pc + 1; // 이동한 칸의 정보를 방문 정보에 저장
+				rear++;
+			}
+		}
+	}
+
+	printf("%d", visit[N][M]); // 최종 위치의 이동한 칸 정보 출력
+
+	return;
+}
+
+int main()
+{
+	int n, m, i, j;
+
+	scanf("%d %d", &n, &m);
+	for (i = 1; i <= n; i++) {
+		for (j = 1; j <= m; j++) {
+			scanf("%1d", &miro[i][j]);
+		}
+	}
+
+	BFS(n, m);
+
+	return 0;
+}
