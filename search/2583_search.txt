@@ -1,0 +1,99 @@
+/*
+
+https://www.acmicpc.net/problem/2583
+
+백준 온라인 저지 2583번: 영역 구하기
+
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 101
+
+typedef struct _queue {
+	int x, y;
+} queue;
+
+int compare(const void *a, const void *b) {
+	return *(int *)a - *(int *)b; // 오름차순
+}
+
+int map[MAX][MAX] = { 0, };
+int visit[MAX][MAX] = { 0, };
+int store[MAX]; // 영역별 넓이 저장
+queue q[11000];
+
+int mx[4] = { 1, -1, 0, 0 };
+int my[4] = { 0, 0, 1, -1 };
+int M, N, stc = 0; // 분리된 영역 카운트
+
+void draw(int lx, int ly, int rx, int ry) {
+	int i, j;
+
+	for (i = lx; i < rx; i++) {
+		for (j = ly; j < ry; j++) {
+			map[i][j] = 1;
+		}
+	}
+}
+
+void bfs(int m, int n) {
+	int front = 0, rear = 0, px, py;
+
+	visit[m][n] = 1;
+	q[0].x = m; q[0].y = n;
+	rear++;
+
+	while (front < rear) {
+		px = q[front].x;
+		py = q[front].y;
+		front++;
+
+		for (int i = 0; i < 4; i++) {
+			if (px + mx[i] >= 0 && px + mx[i] < N && py + my[i] >= 0 && py + my[i] < M) {
+				if (map[px + mx[i]][py + my[i]] == 0 && visit[px + mx[i]][py + my[i]] == 0) {
+					visit[px + mx[i]][py + my[i]] = 1;
+					q[rear].x = px + mx[i];
+					q[rear].y = py + my[i];
+					rear++;
+				}
+			}
+		}
+	}
+
+	store[stc++] = rear; // 반복문 다 끝낸 rear가 넓이
+}
+
+void count_area(int m, int n) {
+	int i, j;
+
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < m; j++) {
+			if (map[i][j] == 0 && visit[i][j] == 0) { // 빈 공간이고, 방문하지 않았을 때
+				bfs(i, j);
+			}
+		}
+	}
+
+	qsort(store, stc, sizeof(int), compare); // 오름차순 정렬
+	printf("%d\n", stc);
+	for (i = 0; i < stc; i++)
+		printf("%d ", store[i]);
+}
+
+int main()
+{
+	int k, i;
+	int x1, y1, x2, y2;
+
+	scanf("%d %d %d", &M, &N, &k);
+
+	for (i = 0; i < k; i++) {
+		scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
+		draw(x1, y1, x2, y2);
+	}
+
+	count_area(M, N);
+
+	return 0;
+}

@@ -1,0 +1,55 @@
+/*
+
+https://www.acmicpc.net/problem/11724
+
+백준 온라인 저지 11724번: 연결 요소의 개수 (Connected Component)
+
+*/
+
+#define MAX 1001
+#include <stdio.h>
+
+int matrix[MAX][MAX] = { 0, }; // 그래프 정보
+int visit[MAX][MAX] = { 0, }; // 방문 정보 (간선)
+int NV[MAX] = { 0, }; // 방문 정보 (정점)
+
+void cc(int N, int v)
+{
+	int i;
+
+	NV[v] = 1; // 정점 방문 기록
+	for (i = 1; i <= N; i++) {
+		if (v == i) continue; // 자기한테 오는 간선은 생각 x
+		if (matrix[v][i] == 1 && visit[v][i] == 0) { // 간선이 있고 방문하지 않았을 때
+			visit[v][i] = 1;
+			visit[i][v] = 1;
+			cc(N, i); // 다음 노드로 dfs
+		}
+	}
+	return;
+}
+
+int main()
+{
+	int n, m, u, v, i;
+	int group_count = 0;
+
+	scanf("%d %d", &n, &m);
+
+	for (i = 0; i < m; i++) {
+		scanf("%d %d", &u, &v);
+		matrix[u][v] = 1;
+		matrix[v][u] = 1;
+	}
+	
+	for (i = 1; i <= n; i++) {
+		if (NV[i] == 0) { // 방문하지 않은 노드일 때 
+			group_count++;
+			cc(n, i);
+		}
+	}
+
+	printf("%d", group_count);
+
+	return 0;
+}

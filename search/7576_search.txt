@@ -1,0 +1,91 @@
+/*
+
+https://www.acmicpc.net/problem/7576
+
+백준 온라인 저지 7576번: 토마토
+
+*/
+
+#define MAX 1000
+#include <stdio.h>
+
+typedef struct _queue
+{
+	int x, y;
+} queue;
+
+int box[MAX][MAX] = { 0, };
+int mx[4] = { 1, -1, 0, 0 };
+int my[4] = { 0, 0, 1, -1 };
+queue q[1000000]; // 1000 * 1000
+
+void bfs(int M, int N)
+{
+	int front = 0, rear = 0, i, j, px, py, count = 0, change = 0;
+
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < M; j++) {
+			if (box[i][j] == 1) { // 익은 토마토의 위치를 큐에 저장
+				q[rear].x = i;
+				q[rear].y = j;
+				rear++;
+			}
+		}
+	}
+
+	if (rear == 0) { // 익은 게 없으면 조건 성립이 안 됨
+		printf("%d", -1);
+		return;
+	}
+
+	while (front < rear) {
+		int temp_rear = rear; // 현재 rear의 값 저장
+		for (i = front; i < temp_rear; i++) { // 현재 익은 모든 토마토에 대해 조건 만족하면
+			px = q[i].x;
+			py = q[i].y;
+			for (j = 0; j < 4; j++) { // 주변 토마토를 익게 한다
+				if (px + mx[j] >= 0 && px + mx[j] < N && py + my[j] >= 0 && py + my[j] < M) {
+					if (box[px + mx[j]][py + my[j]] == 0) {
+						if (change == 0) change = 1; // 원래 다 익어있는 상황 구별위해
+						q[rear].x = px + mx[j];
+						q[rear].y = py + my[j];
+						box[px + mx[j]][py + my[j]] = 1;
+						rear++;
+					}
+				}
+			}
+		}
+		front = temp_rear; // front에 이전에 저장해놨던 rear값 넣어줌
+		count++; // 일 수 카운트
+	}
+
+	count--; // 마지막 큐에서 한번 더 카운트하므로 -1 해준다 (마지막 카운트에서 rear가 front보다 한칸 앞에 있기 때문)
+
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < M; j++) {
+			if (box[i][j] == 0) { // 하나라도 안 익었으면 조건을 만족하지 못하므로 -1 출력하고 함수 종료
+				printf("%d", -1);
+				return;
+			}
+		}
+	}
+	if (change) // 모든 토마토가 익었고, 변화가 있었으면 카운트한 수를 출력
+		printf("%d", count);
+	else // 모든 토마토가 익었으나, 원래 익어있던 상태였다면 0을 출력
+		printf("%d", 0);
+
+	return;
+}
+
+int main()
+{
+	int m, n, i, j;
+
+	scanf("%d %d", &m, &n);
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < m; j++)
+			scanf(" %d", &box[i][j]);
+	}
+
+	bfs(m, n);
+}

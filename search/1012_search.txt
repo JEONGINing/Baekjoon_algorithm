@@ -1,0 +1,81 @@
+/*
+
+https://www.acmicpc.net/problem/1012
+
+백준 온라인 저지 1012번: 유기농 배추
+
+*/
+
+#define MAX 51
+#include <stdio.h>
+
+typedef struct _queue
+{
+	int x, y;
+} queue;
+
+int mx[4] = { 1, -1, 0, 0 };
+int my[4] = { 0, 0, 1, -1 };
+
+int min[2500], min_idx = 0; // 최소로 필요한 지렁이 수 저장하는 배열
+queue q[2500];
+
+void bfs(int f[][MAX], int v[][MAX], int M, int N) {
+	int front = 0, rear = 0, px, py, count = 0;
+	int i, j, k;
+
+	for (i = 0; i < M; i++) {
+		for (j = 0; j < N; j++) {
+			if (f[i][j] == 1 && v[i][j] == 0) { //배추가 있고, 방문하지 않은 곳이라면
+				q[rear].x = i;
+				q[rear].y = j;
+				v[i][j] = 1;
+				rear++;
+
+				while (front < rear) {
+					px = q[front].x;
+					py = q[front].y;
+					front++;
+
+					for (k = 0; k < 4; k++) {
+						if (px + mx[k] >= 0 && px + mx[k] <= M && py + my[k] >= 0 && py + my[k] <= N) {
+							if (f[px + mx[k]][py + my[k]] == 1 && v[px + mx[k]][py + my[k]] == 0) {
+								q[rear].x = px + mx[k];
+								q[rear].y = py + my[k];
+								v[px + mx[k]][py + my[k]] = 1;
+								rear++;
+							}
+						}
+					}
+				}
+				count++; // 한 그룹이 끝나면 카운트 + 1
+			}
+		}
+	}
+
+	min[min_idx++] = count; // 각 케이스의 카운트 값을 저장
+}
+
+int main()
+{
+	int t, m, n, k;
+	int c, i, x, y;
+
+	scanf("%d", &t);
+	
+	for (c = 0; c < t; c++) {
+		int field[MAX][MAX] = { 0, };
+		int visit[MAX][MAX] = { 0, }; // 케이스마다 초기화
+		scanf("%d %d %d", &m, &n, &k);
+		for (i = 0; i < k; i++) {
+			scanf("%d %d", &x, &y);
+			field[x][y] = 1;
+		}
+		bfs(field, visit, m, n);
+	}
+
+	for (c = 0; c < t; c++)
+		printf("%d\n", min[c]);
+
+	return 0;
+}

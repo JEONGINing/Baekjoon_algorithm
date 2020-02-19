@@ -1,0 +1,178 @@
+/*
+
+https://www.acmicpc.net/problem/14502
+
+백준 온라인 저지 14502번: 연구소
+
+*/
+
+#include <stdio.h>
+
+typedef struct _queue
+{
+	int x, y;
+} queue;
+
+int N, M, max = 0;
+int map[8][8] = { 0, };
+int map_for_init[8][8] = { 0, };
+int temp_map[8][8] = { 0, };
+int wall_visit[8][8] = { 0, };
+int virus_visit[8][8] = { 0, };
+int mx[4] = { 1, -1, 0, 0 };
+int my[4] = { 0, 0, 1, -1 };
+
+void init_map()
+{
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			map[i][j] = map_for_init[i][j]; // 원래 입력값으로 맵 초기화
+		}
+	}
+}
+
+void copy_map()
+{
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			temp_map[i][j] = map[i][j]; // 임시 저장 구역에 복사 해놓기
+		}
+	}
+}
+
+void init_wall_visit()
+{
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			wall_visit[i][j] = 0;
+		}
+	}
+}
+
+void init_virus_visit()
+{
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			virus_visit[i][j] = 0;
+		}
+	}
+}
+
+void spread_virus(int x, int y) {
+	int front = 0, rear = 0, px, py;
+	queue q[64];
+
+	q[0].x = x, q[0].y = y;
+	rear++;
+	virus_visit[x][y] = 1;
+
+	while (front < rear) {
+		px = q[front].x, py = q[front].y;
+		front++;
+
+		for (int i = 0; i < 4; i++) {
+			int sx = px + mx[i];
+			int sy = py + my[i];
+			if (sx >= 0 && sx < N && sy >= 0 && sy < M) {
+				if (map[sx][sy] == 0 && virus_visit[sx][sy] == 0) {
+					q[rear].x = sx, q[rear].y = sy;
+					map[sx][sy] = 2;
+					virus_visit[sx][sy] = 1;
+					rear++;
+				}
+			}
+		}
+	}
+
+	return;
+}
+
+int count_safe()
+{
+	int c = 0;
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (map[i][j] == 2) // 바이러스가 있을 때
+				spread_virus(i, j); // bfs 이용해서 바이러스 퍼트림
+		}
+	}
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (map[i][j] == 0)
+				c++; // 안전구역 카운트
+		}
+	}
+
+	return c;
+}
+
+void recovery()
+{
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			map[i][j] = temp_map[i][j]; // 임시 저장한 맵 정보 복구
+		}
+	}
+}
+
+void set_wall(int x, int y, int num)
+{
+	map[x][y] = 1;
+	wall_visit[x][y] = 1; // 맵, 벽 설치 정보 갱신
+
+	if (num == 3) { // 벽 3개일 때
+		copy_map(); // 맵 정보 임시 저장
+		init_virus_visit(); // 바이러스 방문 정보 초기화
+		int cnt = count_safe(); // 안전 구역 카운트
+		recovery(); // 바이러스 퍼지기 전으로 복구
+
+		if (cnt > max) max = cnt; // 최댓값이면 갱신
+
+		wall_visit[x][y] = 0; // 해당 위치 벽 설치 정보 초기화
+
+		return;
+	}
+    
+	for (int i = 0; i < N; i++) { // 벽 3개 아닐 때
+		for (int j = 0; j < M; j++) {
+			if (map[i][j] == 0 && wall_visit[i][j] == 0) {
+				set_wall(i, j, num + 1); // dfs로 벽 하나 더 세움
+				map[i][j] = 0; // 해당 위치 맵 정보 초기화
+			}
+		}
+	}
+
+	return;
+}
+
+int main()
+{
+	scanf("%d %d", &N, &M);
+	
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			scanf("%d", &map[i][j]);
+			map_for_init[i][j] = map[i][j]; // 초기화에 쓸 맵 정보 따로 저장
+		}
+	}
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (map_for_init[i][j] == 0) {
+				init_wall_visit(); // 벽 세우기 방문 정보 초기화
+				init_map(); // 맵 정보 초기화
+				set_wall(i, j, 1); // 벽 세우기 (1개부터)
+			}
+		}
+	}
+
+	printf("%d", max);
+
+	return 0;
+}
+
+
+
+

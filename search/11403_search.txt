@@ -1,0 +1,50 @@
+/*
+
+https://www.acmicpc.net/problem/11403
+
+백준 온라인 저지 11403번: 경로 찾기
+
+*/
+
+#define MAX 101
+#include <stdio.h>
+
+int g[MAX][MAX] = { 0, };
+
+void dest(int N) {
+	int i, j, k;
+	for (k = 0; k < N; k++) {
+		for (i = 0; i < N; i++) {
+			for (j = 0; j < N; j++) {
+				if (g[i][k] == 1 && g[k][j] == 1) { // i에서 k를 거쳐서 j로 가는 경로가 있으면
+					g[i][j] = 1; // i에서 j로 가는 경로가 있다는 것
+				}
+			}
+		}
+	}
+
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			printf("%d ", g[i][j]);
+		}
+		printf("\n");
+	}
+
+	return;
+}
+
+int main()
+{
+	int n, i, j;
+
+	scanf("%d", &n);
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < n; j++) {
+			scanf(" %d", &g[i][j]); // 경로 정보 저장
+		}
+	}
+
+	dest(n);
+
+	return 0;
+}

@@ -1,0 +1,104 @@
+/*
+
+https://www.acmicpc.net/problem/2468
+
+백준 온라인 저지 2468번: 안전 영역
+
+*/
+
+#define MAX 101
+#include <stdio.h>
+
+typedef struct _queue
+{
+	int x, y;
+} queue;
+
+int height[MAX][MAX]; // 높이 정보
+int flood[MAX][MAX] = { 0, }; // 잠김 정보
+int N, low = 100, high = 0; // 주어진 높이 정보의 최대, 최소값 저장
+int safe_max = 0; // 잠기지 않는 구역 최댓값
+
+int mx[4] = { 1, -1, 0, 0 };
+int my[4] = { 0, 0, 1, -1 };
+queue q[11000];
+
+void check_area() { // bfs
+	int visit[MAX][MAX] = { 0, };
+	int count = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (flood[i][j] == 0 && visit[i][j] == 0) {
+				int front = 0, rear = 0, px, py;
+				visit[i][j] = 1;
+				q[rear].x = i;
+				q[rear].y = j;
+				rear++;
+
+				while (front < rear) {
+					px = q[front].x;
+					py = q[front].y;
+					front++;
+
+					for (int k = 0; k < 4; k++) {
+						if (px + mx[k] >= 0 && px + mx[k] < N && py + my[k] >= 0 && py + my[k] < N) {
+							if (flood[px + mx[k]][py + my[k]] == 0 && visit[px + mx[k]][py + my[k]] == 0) {
+								visit[px + mx[k]][py + my[k]] = 1;
+								q[rear].x = px + mx[k];
+								q[rear].y = py + my[k];
+								rear++;
+							}
+						}
+					}
+				}
+				count++; // while문 다 돌고 나면 그 구역에 있는 곳을 다 카운트한 것이므로
+			}
+		}
+	}
+	if (safe_max < count) // 최댓값 갱신
+		safe_max = count;
+}
+
+void check_flood(int h) {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (height[i][j] <= h) // h이하인 지점은 물에 잠긴 것으로 표시
+				flood[i][j] = 1;
+		}
+	}
+}
+
+int max_safe_zone()
+{
+	for (int i = low; i <= high; i++) { // 최댓값까지 조사, 그 이후엔 다 잠기는 경우이므로 의미 없음
+		check_flood(i); // 물 잠김 정보 갱신
+		check_area(); // 안 잠긴 구역 조사
+	}
+
+	return safe_max;
+}
+
+int main()
+{
+	int i, j;
+
+	scanf("%d", &N);
+
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) { // 높이 정보 및 최대, 최소값 기록
+			scanf("%d", &height[i][j]);
+			if (height[i][j] > high)
+				high = height[i][j];
+			if (height[i][j] < low)
+				low = height[i][j];
+		}
+	}
+
+	if (low > 0) // 최소값이 0보다 클 때 1을 빼준다 (다 안 잠기는 경우도 포함시켜야 하기 때문)
+		low -= 1;
+
+	printf("%d", max_safe_zone());
+
+	return 0;
+
+}
