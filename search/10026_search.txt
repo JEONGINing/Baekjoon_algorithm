@@ -1,0 +1,127 @@
+/*
+
+https://www.acmicpc.net/problem/10026
+
+백준 온라인 저지 10026번: 적록색약
+
+*/
+
+#define MAX 101
+#include <stdio.h>
+
+typedef struct _queue
+{
+	int x, y;
+} queue;
+
+char map[MAX][MAX];
+int n;
+int mx[4] = { 1, -1, 0, 0 };
+int my[4] = { 0, 0, 1, -1 };
+queue q[11000];
+
+void not_cb() {
+	int visit[MAX][MAX] = { 0, };
+	int front = 0, rear = 0, count = 0, px, py;
+	char color;
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (visit[i][j] == 0) {
+				color = map[i][j];
+				visit[i][j] = 1;
+				q[rear].x = i;
+				q[rear].y = j;
+				rear++;
+
+				while (front < rear) {
+					px = q[front].x;
+					py = q[front].y;
+					front++;
+					for (int k = 0; k < 4; k++) {
+						if (px + mx[k] >= 0 && px + mx[k] < n && py + my[k] >= 0 && py + my[k] < n) {
+							if (color == map[px + mx[k]][py + my[k]] && visit[px + mx[k]][py + my[k]] == 0) {
+								visit[px + mx[k]][py + my[k]] = 1;
+								q[rear].x = px + mx[k];
+								q[rear].y = py + my[k];
+								rear++;
+							}
+						}
+					}
+				}
+				count++; // while문 끝나면 한 구역이 끝난 것이므로 카운트
+			}
+		}
+	}
+	printf("%d ", count);
+}
+
+void cb() {
+	int visit[MAX][MAX] = { 0, };
+	int front = 0, rear = 0, count = 0, px, py;
+	char color;
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (visit[i][j] == 0) {
+				color = map[i][j];
+				visit[i][j] = 1;
+				q[rear].x = i;
+				q[rear].y = j;
+				rear++;
+
+				while (front < rear) {
+					px = q[front].x;
+					py = q[front].y;
+					front++;
+					if (color == 'B') { // 파랑일 때는 색약 아닌 사람일 때와 똑같이
+						for (int k = 0; k < 4; k++) {
+							if (px + mx[k] >= 0 && px + mx[k] < n && py + my[k] >= 0 && py + my[k] < n) {
+								if (color == map[px + mx[k]][py + my[k]] && visit[px + mx[k]][py + my[k]] == 0) {
+									visit[px + mx[k]][py + my[k]] = 1;
+									q[rear].x = px + mx[k];
+									q[rear].y = py + my[k];
+									rear++;
+								}
+							}
+						}
+					}
+					else { // 빨강 or 초록일 경우
+						for (int k = 0; k < 4; k++) {
+							if (px + mx[k] >= 0 && px + mx[k] < n && py + my[k] >= 0 && py + my[k] < n) {
+								if (map[px + mx[k]][py + my[k]] == 'G' || map[px + mx[k]][py + my[k]] == 'R') { // 빨강 혹은 초록이고
+									if (visit[px + mx[k]][py + my[k]] == 0) { // 방문하지 않았을 때
+										visit[px + mx[k]][py + my[k]] = 1;
+										q[rear].x = px + mx[k];
+										q[rear].y = py + my[k];
+										rear++;
+									}
+								}
+							}
+						}
+					}
+				}
+				count++;
+			}
+		}
+	}
+	printf("%d", count);
+}
+
+int main()
+{
+	scanf("%d", &n);
+	getchar(); // \n 제거
+	
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			scanf("%c", &map[i][j]);
+		}
+		getchar(); // \n 제거
+	}
+
+	not_cb(); // 색약 아닌 사람
+	cb(); // 색약인 사람
+
+	return 0;
+}

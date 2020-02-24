@@ -1,0 +1,56 @@
+/*
+
+https://www.acmicpc.net/problem/1987
+
+백준 온라인 저지 1987번: 알파벳
+
+*/
+
+#include <stdio.h>
+
+int R, C, count = 0, max_count = 0;
+char board[21][21];
+int visit[26] = { 0, }; // A~Z 방문 여부
+int mx[4] = { 1, -1, 0, 0 };
+int my[4] = { 0, 0, 1, -1 };
+
+void max_block(int x, int y) {
+	int al_idx = board[x][y] - 'A'; // 알파벳을 0~25 인덱스로 변경
+	visit[al_idx] = 1; // 방문 기록
+	count++; // 지난 칸 수 카운트
+	if (count > max_count)
+		max_count = count; // 최대일 때 갱신
+
+	for (int i = 0; i < 4; i++) {
+		if (x + mx[i] >= 0 && x + mx[i] < R && y + my[i] >= 0 && y + my[i] < C) { // 범위 안에 있을 때
+			int check = board[x + mx[i]][y + my[i]] - 'A'; // 이미 지나 온 알파벳인지 확인하기 위해 인덱스 변경
+			if (visit[check] == 0) { // 지나오지 않은 곳일 때 
+				max_block(x + mx[i], y + my[i]); // dfs
+				visit[check] = 0; // dfs가 끝나면 dfs 출발한 알파벳의 방문 기록을 초기화
+				count--; // 카운트도 -1 해줌
+			}
+		}
+	}
+}
+
+int main()
+{
+	int i, j;
+	scanf("%d %d", &R, &C);
+
+	getchar(); // \n 제거
+
+	for (i = 0; i < R; i++) {
+		for (j = 0; j < C; j++) {
+			scanf("%c", &board[i][j]);
+		}
+		getchar(); // \n 제거
+	}
+
+	max_block(0, 0); // 최대 칸 수 구하기. (0,0)에서 출발
+
+	printf("%d", max_count);
+
+	return 0;
+
+}
