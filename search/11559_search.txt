@@ -1,0 +1,133 @@
+/*
+
+https://www.acmicpc.net/problem/11559
+
+백준 온라인 저지 11559번: Puyo Puyo
+
+*/
+
+#include <iostream>
+#include <queue>
+#include <stdio.h>
+
+using namespace std;
+
+typedef struct _pos
+{
+	int x, y;
+} pos;
+
+char map[12][6]; // 현재 맵
+char nextMap[12][6]; // 터지고 난 이후 맵
+int findPY = 1, combo = 0;
+int mx[4] = { 1, -1, 0, 0 };
+int my[4] = { 0, 0, 1, -1 };
+queue <pos> q, erase;
+
+void bomb()
+{
+	while (!erase.empty()) {
+		pos ps = erase.front();
+		map[ps.x][ps.y] = '*';
+		erase.pop(); // 터진 곳에 * 저장
+	}
+
+	for (int j = 0; j < 6; j++) {
+		int count = 11;
+		for (int i = 11; i >= 0; i--) { // 아래에서부터
+			if (map[i][j] != '*') { // 터지는 곳이 아닐 때 
+				nextMap[count--][j] = map[i][j]; 
+			}
+		}
+		while (count >= 0) { // count가 0보다 클 때
+			nextMap[count--][j] = '.'; // 남은 count만큼 '.' 넣어줌
+		}
+	}
+}
+
+void copy_map()
+{
+	for (int i = 0; i < 12; i++) {
+		for (int j = 0; j < 6; j++) {
+			map[i][j] = nextMap[i][j];
+		}
+	}
+}
+
+void bfs()
+{
+	int visited[12][6] = { 0, }; // 방문 여부 확인
+	int count_max = 0; // 4이상이면 터진 것
+
+	for (int i = 11; i >= 0; i--) { // 아래에서부터
+		for (int j = 0; j < 6; j++) {
+			if (map[i][j] != '.' && !visited[i][j]) { // '.'이 아니고 방문하지 않은 곳일 때
+				char color = map[i][j]; // 색깔 정보 저장
+				int count = 1; // 주변에 몇 개인지 카운트
+				pos ps;
+				ps.x = i;
+				ps.y = j;
+				q.push(ps); // bfs 용
+				erase.push(ps); // 터지는 곳 확인 용
+				visited[i][j] = 1;
+
+				while (!q.empty()) {
+					pos now = q.front();
+					q.pop();
+					for (int k = 0; k < 4; k++) {
+						int tx = now.x + mx[k];
+						int ty = now.y + my[k];
+						if (tx >= 0 && tx < 12 && ty >= 0 && ty < 6) { // 범위 안에 들어오고
+							if (map[tx][ty] == color && !visited[tx][ty]) { // 색깔이 같고, 방문하지 않은 곳일 때
+								ps.x = tx;
+								ps.y = ty;
+								q.push(ps);
+								erase.push(ps);
+								visited[tx][ty] = 1;
+								count++; // 인접한 같은 색깔 개수 카운트
+							}
+						}
+					}
+				}
+
+				if (count >= 4) { // 4개 이상일 때
+					bomb(); // 터짐
+				}
+				else { // 4개 미만일 때 
+					while (!erase.empty()) {
+						erase.pop(); // erase에 저장된 정보 그냥 다 지움
+					}
+				}
+
+				if (count_max < count)
+					count_max = count; // count_max 갱신
+			}
+		}
+	}
+
+	copy_map(); // nextMap에 있는 정보를 map에 복사
+
+	if (count_max < 4) { // count_max가 4보다 작으면 터지지 않은 것이므로
+		findPY = 0;
+	}
+}
+
+int main()
+{
+	for (int i = 0; i < 12; i++) {
+		for (int j = 0; j < 6; j++) {
+			scanf("%c", &map[i][j]);
+		}
+		getchar();
+	}
+
+	while (findPY) { // bomb이 일어났을 때
+		bfs();
+		if (findPY) // 그 다음도 bomb이 일어났을 때
+			combo++; // 연쇄 카운트
+	}
+
+	printf("%d", combo);
+
+	return 0;
+}

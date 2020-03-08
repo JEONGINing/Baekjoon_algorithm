@@ -1,0 +1,62 @@
+/*
+
+https://www.acmicpc.net/problem/1389
+
+백준 온라인 저지 1389번: 케빈 베이컨의 6단계 법칙
+
+*/
+
+#define MAX 101
+#include <stdio.h>
+
+int N, M;
+int relation[MAX][MAX] = { 0, };
+int min = 10000, result;
+
+
+void kevin_bacon() // 플로이드-와샬
+{
+	for (int k = 1; k <= N; k++) {
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= N; j++) {
+				if (i != j && j != k && k != i) { // k,i,j가 다 다르고
+					if (relation[i][k] != 0 && relation[k][j] != 0) { // 거쳐가는 지점이 0이 아니어야 이동 가능
+						if (relation[i][j] == 0) // 연결된 지점이 아닐 때
+							relation[i][j] = relation[i][k] + relation[k][j];
+						else { // 이미 연결된 지점일 때
+							if (relation[i][j] > relation[i][k] + relation[k][j]) // 이동거리가 더 짧을 경우 갱신
+								relation[i][j] = relation[i][k] + relation[k][j];
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	for (int i = 1; i <= N; i++) {
+		int sum = 0;
+		for (int j = 1; j <= N; j++) {
+			sum += relation[i][j];
+		}
+		if (min > sum) {
+			min = sum;
+			result = i;
+		}
+	}
+	printf("%d", result);
+}
+
+int main()
+{
+	int x, y;
+
+	scanf("%d %d", &N, &M);
+
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d", &x, &y);
+		relation[x][y] = 1; 
+		relation[y][x] = 1;
+	}
+
+	kevin_bacon();
+}

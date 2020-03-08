@@ -1,0 +1,138 @@
+/*
+
+https://www.acmicpc.net/problem/2146
+
+백준 온라인 저지 2146번: 다리 만들기
+
+*/
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <stdio.h>
+#define MAX 101
+
+typedef struct _pos
+{
+	int x, y;
+	int str; // 다리 길이 정보
+} pos;
+
+using namespace std;
+
+queue <pos> q;
+vector <int> island[MAX]; // 섬 정보
+int visited[MAX][MAX] = { 0, }; // 방문 정보
+int temp_visited[MAX][MAX] = { 0, }; // 방문 정보 임시 저장
+int N;
+int mx[4] = { 1, -1, 0, 0 };
+int my[4] = { 0, 0, 1, -1 };
+int min_str = 200;
+
+void bfsForBridge(queue <pos> tq)
+{
+	while (!tq.empty()) {
+		pos now = tq.front();
+		tq.pop();
+
+		for (int i = 0; i < 4; i++) {
+			int tx = now.x + mx[i];
+			int ty = now.y + my[i];
+			int ts = now.str;
+			if (tx >= 0 && tx < N && ty >= 0 && ty < N) {
+				if (visited[tx][ty] == 0) { // 방문하지 않은 곳이고,
+					pos next;
+					if (island[tx][ty] == 0) { // <1> 바다 위일 때
+						visited[tx][ty] = 2; // 다리를 2로 표시
+						next.x = tx;
+						next.y = ty;
+						next.str = ts + 1; // 해당 위치의 다리 길이에 +1
+						tq.push(next);
+					}
+					else { // <2> 육지 위일 때 (연결된 것)
+						if (min_str > ts) { // 다리 길이의 최솟값 갱신
+							min_str = ts;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void save_visited()
+{
+	for (int i = 0; i < MAX; i++) {
+		for (int j = 0; j < MAX; j++) {
+			temp_visited[i][j] = visited[i][j];
+		}
+	}
+}
+
+void load_visited()
+{
+	for (int i = 0; i < MAX; i++) {
+		for (int j = 0; j < MAX; j++) {
+			visited[i][j] = temp_visited[i][j];
+		}
+	}
+}
+
+void bfsForIsland()
+{
+	pos ps;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (island[i][j] == 1 && visited[i][j] == 0) { // 육지이고, 방문하지 않았을 때
+				queue <pos> temp; // 육지 정보를 따로 저장하는 용도
+				visited[i][j] = 1;
+				ps.x = i;
+				ps.y = j;
+				ps.str = 0; // 육지 정보이므로 다리 길이는 0
+				q.push(ps);
+				temp.push(ps); 
+
+				while (!q.empty()) {
+					pos now = q.front();
+					q.pop();
+
+					for (int k = 0; k < 4; k++) {
+						int tx = now.x + mx[k];
+						int ty = now.y + my[k];
+						if (tx >= 0 && tx < N && ty >= 0 && ty < N) {
+							if (island[tx][ty] == 1 && visited[tx][ty] == 0) {
+								visited[tx][ty] = 1;
+								ps.x = tx;
+								ps.y = ty;
+								ps.str = 0;
+								q.push(ps);
+								temp.push(ps);
+							}
+						}
+					}
+				}
+				save_visited(); // 방문 정보 temp_visited에 저장
+				bfsForBridge(temp); // 따로 저장한 육지 정보를 인수로 씀
+				load_visited(); // 저장 해놓은 temp_visited를 다시 visited에 저장 후 반복 (육지 정보만 사용)
+			}
+		}
+	}
+}
+
+int main()
+{
+	scanf("%d", &N);
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			int t;
+			scanf("%d", &t);
+			island[i].push_back(t);
+		}
+	}
+
+	bfsForIsland();
+	printf("%d", min_str);
+
+	return 0;
+}

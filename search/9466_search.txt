@@ -1,0 +1,89 @@
+/*
+
+https://www.acmicpc.net/problem/9466
+
+백준 온라인 저지 9466번: 텀 프로젝트
+*/
+
+#include <iostream>
+#include <vector>
+#include <stdio.h>
+#include <stack>
+#define MAX 100001
+
+using namespace std;
+
+int want[MAX];
+int isTeam[MAX] = { 0, };
+int check[MAX] = { 0, };
+vector <int> result;
+stack <int> team;
+
+void dfs(int now) {
+	if (!isTeam[now]) { // 아직 팀에 소속이 안 되어 있을 때
+		team.push(now); // 스택에 저장
+		check[now] = 1; // 방문 표시
+		
+		int next = want[now]; // 이 사람이 선택한 사람
+		if (check[next] == 0) { // 선택된 사람이 아직 방문되지 않았다면
+			dfs(next);
+		}
+		else { // 선택된 사람이 이미 방문한 사람이라면
+			if (!isTeam[next] && check[next] == 1) { // 팀에 소속이 안 되어 있고, 팀이 안 되는 경우가 아닐 때
+				isTeam[next] = 1; // 팀 소속 표시
+				int group = team.top(); 
+				team.pop(); // 스택에 저장된 top 변수에 저장 후 pop
+				while (group != next) { // 이 사람이 선택한 사람과 같을 때까지 
+					if (!team.empty()) { // 스택이 비어있지 않을 때
+						isTeam[group] = 1; // 팀 소속 표시하고
+						group = team.top(); 
+						team.pop(); // top 변수에 저장 후 pop 반복
+					}
+				}
+			}
+		}
+	}
+}
+
+int main()
+{
+	int T, n;
+
+	scanf("%d", &T);
+
+	for (int i = 0; i < T; i++) {
+
+		scanf("%d", &n);
+		for (int j = 1; j <= n; j++) {
+			int someone;
+			scanf("%d", &someone);
+			want[j] = someone;
+		}
+
+		for (int j = 1; j <= n; j++) {
+				dfs(j);
+				while (!team.empty()) { // 스택에 남아 있는 수는 팀이 되지 않는 경우이기에 더 이상 체크할 필요 없음
+					int r = team.top();
+					check[r] = 2; // 0: 아직 방문하지 않은 학생, 1: 이미 방문해서 팀을 이룬 학생, 2: 방문해도 팀이 안 되는 학생
+					team.pop();
+				}
+		}
+
+		int count = 0;
+		for (int j = 1; j <= n; j++) {
+			if (isTeam[j] == 0)
+				count++;
+		}
+		result.push_back(count);
+
+		for (int j = 1; j <= n; j++) {
+			isTeam[j] = 0;
+			check[j] = 0;
+		}
+	}
+
+	for (int i = 0; i < T; i++)
+		printf("%d\n", result[i]);
+
+	return 0;
+}

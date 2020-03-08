@@ -1,0 +1,124 @@
+/*
+
+https://www.acmicpc.net/problem/1707
+
+백준 온라인 저지 1707번: 이분 그래프 ( C++)
+
+*/
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <stdio.h>
+#include <cstring>
+
+#define MAX 20001
+#define RED 1
+#define BLUE 2
+
+using namespace std;
+
+int K, V, E;
+vector <int> graph[MAX];
+int visited[MAX];
+int result[5];
+
+void bfs(int s) {
+	queue<int> q;
+	int color = RED;
+	visited[s] = color;
+	q.push(s);
+	while (!q.empty()) { // 큐가 비어있지 않을 때
+		int now = q.front();
+		q.pop();
+
+		if (visited[now] == RED) {
+			color = BLUE; 
+		}
+		else if (visited[now] == BLUE) {
+			color = RED;	     // 연결된 색과 다른 색으로 변경
+		}
+
+		int gsize = graph[now].size();
+		for (int i = 0; i < gsize; i++) {
+			int next = graph[now][i];
+			if (!visited[next]) {	
+				visited[next] = color;
+				q.push(next);
+			}
+		}
+	}
+}
+
+void dfs(int s) {
+	if (!visited[s]) {
+		visited[s] = RED;
+	}
+
+	int gsize = graph[s].size();
+	for (int i = 0; i < gsize; i++) {
+		int next = graph[s][i];
+		if (!visited[next]) {
+			if (visited[s] == RED) {
+				visited[next] = BLUE;
+			}
+			else if (visited[s] == BLUE) {
+				visited[next] = RED;
+			}
+			dfs(next);
+		}
+	}
+}
+
+bool isBiperate() {
+	for (int i = 1; i <= V; i++) {
+		int gsize = graph[i].size();
+		for (int j = 0; j < gsize; j++) {
+			int next = graph[i][j];
+			if (visited[i] == visited[next]) { // 연결된 간선이 색깔이 같으면 0을 리턴하고 함수 종료
+				return 0;
+			}
+		}
+	}
+
+	return 1; // 모든 조건 만족할 때 1을 리턴. 이분 그래프 성립
+}
+
+int main() {
+	scanf("%d", &K);
+	for (int i = 0; i < K; i++) {
+		scanf("%d %d", &V, &E);
+		for (int j = 0; j < E; j++) {
+			int x, y;
+			scanf("%d %d", &x, &y);
+			graph[x].push_back(y);
+			graph[y].push_back(x);   // 그래프 정보 저장
+		}
+
+		for (int j = 1; j <= V; j++) {       // 간선 순회
+			if (!visited[j]) {           // 방문하지 않았을 때
+				bfs(j);
+				//dfs(j);	   // 둘 중 아무거나 쓰셈
+			}
+		}
+
+		if (isBiperate())		 // 이분 그래프인지 확인
+			result[i] = 1;
+		else
+			result[i] = 0;
+
+		for (int j = 1; j <= V; j++)
+			graph[j].clear();	 // 그래프 초기화
+
+		memset(visited, 0, sizeof(visited)); // 방문 정보 초기화
+	}
+
+	for (int i = 0; i < K; i++) {
+		if (result[i] == 1)
+			printf("YES\n");
+		else
+			printf("NO\n");
+	}
+
+	return 0;
+}

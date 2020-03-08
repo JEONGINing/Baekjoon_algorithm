@@ -1,0 +1,137 @@
+/*
+
+https://www.acmicpc.net/problem/2573
+
+백준 온라인 저지 2573번: 빙산 (C++)
+
+*/
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <stdio.h>
+
+#define MAX 301
+
+using namespace std;
+
+typedef struct _pos
+{
+	int x, y;
+} pos;
+
+vector <int> iceberg[MAX];
+vector <int> NextYear[MAX];
+int N, M;
+int year = 0;
+int mx[4] = { 1, -1, 0, 0 };
+int my[4] = { 0, 0, 1, -1 };
+
+void melting()
+{
+	for (int i = 1; i < N - 1; i++) {
+		for (int j = 1; j < M - 1; j++) {
+			if (iceberg[i][j]) {
+				for (int k = 0; k < 4; k++) {
+					int tx = i + mx[k];
+					int ty = j + my[k];
+					if (iceberg[i][j] == 0) // 이미 다 가라 앉았으면 break
+						break;
+					else {
+						if (iceberg[tx][ty] == 0 && NextYear[i][j] != 0) { // 빙산 주변이 바다이고, 아직 빙산이 남아 있을 때
+							NextYear[i][j]--;
+						}
+					}
+				}
+			}
+		}
+	}
+	year++; // 한 해가 다 지났으므로 카운트
+}
+
+int CountLump() // bfs 사용
+{
+	queue <pos> q;
+	pos ps;
+	int visited[MAX][MAX] = { 0, };
+	int count = 0;
+	for (int i = 1; i < N - 1; i++) {
+		for (int j = 1; j < M - 1; j++) {
+			if (NextYear[i][j] != 0 && visited[i][j] == 0) { // 빙산이 있고, 아직 방문하지 않았을 때 
+				visited[i][j] = 1;
+				ps.x = i;
+				ps.y = j;
+				q.push(ps);
+				while (!q.empty()) {
+					pos now = q.front();
+					q.pop();
+					for (int k = 0; k < 4; k++) {
+						int tx = now.x + mx[k];
+						int ty = now.y + my[k];
+						if (NextYear[tx][ty] != 0 && visited[tx][ty] == 0) {
+							visited[tx][ty] = 1;
+							ps.x = tx;
+							ps.y = ty;
+							q.push(ps);
+						}
+					}
+				}
+				count++; // 덩어리 개수 카운트
+			}
+		}
+	}
+
+	return count; // 덩어리 개수 리턴
+}
+
+bool IsMeltAll()
+{
+	for (int i = 0; i < N; i++) {
+		for(int j = 0; j < M; j++) {
+			if (NextYear[i][j] != 0) // 빙산이 하나라도 남아 있으면 0 리턴
+				return 0;
+		}
+	}
+
+	return 1; // 
+}
+
+void CopyNext()
+{
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			iceberg[i][j] = NextYear[i][j];
+		}
+	}
+}
+
+int main()
+{
+	scanf("%d %d", &N, &M);
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			int ice;
+			scanf("%d", &ice);
+			iceberg[i].push_back(ice); // 현재 빙산 정보 저장
+			NextYear[i].push_back(ice); // 내년 빙산 정보 저장될 곳
+		}
+	}
+
+	while (1) {
+		melting();
+		if (CountLump() > 1) // 덩어리가 두개 이상일 때 break
+			break;
+		if (IsMeltAll()) // 다 녹았을 때 break
+			break;
+		CopyNext(); // 둘 다 해당 안 되면 내년 빙산 정보를 현재에 복사하고 다시 반복
+	}
+
+	if (CountLump() > 1) { // 덩어리가 2개 이상이면 몇년 만에 됐는지를 출력
+		printf("%d", year);
+	}
+	else {
+		printf("%d", 0); // 다 녹을 때까지 덩어리가 한 개였다면 0 출력
+	}
+
+	return 0;
+}
