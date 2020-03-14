@@ -1,0 +1,28 @@
+/*
+
+https://www.acmicpc.net/problem/2193
+
+백준 온라인 저지 2193번: 이친수
+
+*/
+
+#include <iostream>
+#include <stdio.h>
+
+int main()
+{
+	int N;
+	long long dp[91]; // int형으로 다 못 표현하므로 long long 사용
+
+	scanf("%d", &N);
+
+	dp[0] = 1;
+	dp[1] = 1;
+
+	for (int i = 2; i < N; i++)
+		dp[i] = dp[i - 1] + dp[i - 2]; // 규칙 찾다보면 피보나치 점화식이 나옴
+
+	printf("%lld", dp[N - 1]);
+
+	return 0;
+}

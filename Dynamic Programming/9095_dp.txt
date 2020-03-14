@@ -1,0 +1,39 @@
+/*
+
+https://www.acmicpc.net/problem/9095
+
+백준 온라인 저지 9095번: 1, 2, 3 더하기
+
+*/
+
+#include <iostream>
+#include <vector>
+#include <stdio.h>
+
+using namespace std;
+
+int main()
+{
+	int T, n;
+	int dp[12];
+	vector <int> result;
+
+	scanf("%d", &T);
+
+	dp[1] = 1;
+	dp[2] = 2;
+	dp[3] = 4;
+
+	for (int i = 4; i <= 11; i++)
+		dp[i] = dp[i - 1] + dp[i- 2] + dp[i - 3]; // 점화식 도출 (직접 손으로 해보는 게 제일 빠름)
+
+	for (int i = 0; i < T; i++) {
+		scanf("%d", &n);
+		result.push_back(dp[n]);
+	}
+
+	for (int i = 0; i < T; i++)
+		printf("%d\n", result[i]);
+
+	return 0;
+}

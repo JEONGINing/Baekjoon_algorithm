@@ -1,0 +1,54 @@
+/*
+
+https://www.acmicpc.net/problem/2579
+
+백준 온라인 저지 2579번: 계단 오르기
+
+*/
+
+#include <iostream>
+#include <stdio.h>
+
+using namespace std;
+
+int main()
+{
+	int n, s;
+	int stairs[301]; // 계단별 점수
+	int max_cons[301]; // 계단별 연속된 수 누적 최댓값 (i번째 항이 연속된 값, 따라서 i-1번째 계단을 방문한 상태일 때 i번째까지 누적 최댓값)
+	int max_div[301]; // 계단별 분리된 수 누적 최댓값 (i번째 항이 분리된 값, 따라서 i-1번째 계단을 방문하지 않은 상태일 때 i번째까지 누적 최댓값)
+
+	scanf("%d", &n);
+
+	for (int i = 1; i <= n; i++) {
+		scanf("%d", &s);
+		stairs[i] = s; // 점수 입력
+	}
+
+	for (int i = 1; i <= n; i++) {
+		if (i == 1) {
+			max_cons[1] = stairs[1];
+			max_div[1] = stairs[1]; // 1번까지 누적이므로, 둘다 1번 점수 삽입
+		}
+		else if (i == 2) {
+			max_cons[2] = stairs[1] + stairs[2]; // 2번까지 연속된 값이므로 1, 2 합
+			max_div[2] = stairs[2]; // 2번까지 분리된 누적 합이므로 바로 2로 간 것
+		}
+		else {
+			max_cons[i] = max_div[i - 1] + stairs[i]; // i번이 연속된 값이므로 i-1번째까지 분리된 누적 합에 i번째 점수 합
+			if (max_cons[i - 2] > max_div[i - 2]) { //  i-1번째는 비어있으므로, i-2번째 연속합, 분리합 중 큰 것과 i번째 점수 합
+				max_div[i] = max_cons[i - 2] + stairs[i];
+			}
+			else {
+				max_div[i] = max_div[i - 2] + stairs[i];
+			}
+		}
+	}
+
+	if (max_cons[n] > max_div[n]) // n번째 연속합과 분리합 중 큰 것이 최대값
+		printf("%d", max_cons[n]);
+	else
+		printf("%d", max_div[n]);
+
+	return 0;
+}

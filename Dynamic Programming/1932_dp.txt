@@ -1,0 +1,59 @@
+/*
+
+https://www.acmicpc.net/problem/1932
+
+백준 온라인 저지 1932번: 정수 삼각형
+
+*/
+
+#include <iostream>
+#include <vector>
+#include <stdio.h>
+
+using namespace std;
+
+int main()
+{
+	int N, val;
+	vector <int> sum_tri[500];
+
+	scanf("%d", &N);
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j <= i; j++) {
+			scanf("%d", &val); // 삼각형에 들어갈 정수 입력
+			sum_tri[i].push_back(val); 
+		}
+	}
+
+	for (int i = 1; i < N; i++) { // 누적합이므로 2번째 줄부터
+		for (int j = 0; j <= i; j++) {
+			if (j == 0) {
+				sum_tri[i][j] += sum_tri[i - 1][j]; // 가장 왼쪽일 때는 대각선 오른쪽 위의 수를 더함
+			}
+			else if (j == i) {
+				sum_tri[i][j] += sum_tri[i - 1][j-1]; // 가장 오른쪽일 때는 대각선 왼쪽 위의 수를 더함
+			}
+			else {
+				if (sum_tri[i - 1][j - 1] > sum_tri[i - 1][j]) { // 중간에 있는 수는 왼쪽, 오른쪽 대각선 중 큰 수를 더함
+					sum_tri[i][j] += sum_tri[i - 1][j - 1];
+				}
+				else {
+					sum_tri[i][j] += sum_tri[i - 1][j];
+				}
+			}
+		}
+	}
+
+	int sum_max = 0;
+
+	for (int i = 0; i < N; i++) {
+		if (sum_max < sum_tri[N - 1][i]) {
+			sum_max = sum_tri[N - 1][i]; // 가장 아랫줄에 있는 수 중에 최댓값을 구함
+		}
+	}
+
+	printf("%d", sum_max);
+
+	return 0;
+}

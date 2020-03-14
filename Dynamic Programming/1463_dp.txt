@@ -1,0 +1,57 @@
+/*
+
+https://www.acmicpc.net/problem/1463
+
+백준 온라인 저지 1463번: 1로 만들기
+
+*/
+
+#include <iostream>
+#include <vector>
+#include <stdio.h>
+#define INF 10000
+
+using namespace std;
+
+int main()
+{
+	int N;
+	vector <int> dp;
+	scanf("%d", &N);
+
+	dp.push_back(-1); //dp[0] // 사용x
+	dp.push_back(0); //dp[1] // 1
+	dp.push_back(1); //dp[2] // 2 -> 1
+	dp.push_back(1); // dp[3] // 3 -> 1
+
+	for (int i = 4; i <= N; i++) {
+		int min1, div2, div3;
+		int MIN;
+
+		min1 = dp[i - 1] + 1; // 1 빼는 건 항상 가능
+
+		if (i % 2 == 0) // 2로 나눌 수 있을 때
+			div2 = dp[i / 2] + 1;
+		else
+			div2 = INF;
+
+		if (i % 3 == 0) // 3으로 나눌 수 있을 때
+			div3 = dp[i / 3] + 1;
+		else
+			div3 = INF;
+
+		MIN = min1;
+
+		if (MIN > div2)
+			MIN = div2;
+
+		if (MIN > div3)
+			MIN = div3; // 이 셋 중 가장 작은 수가 연산 횟수의 최솟값
+
+		dp.push_back(MIN);
+	}
+
+	printf("%d", dp[N]);
+
+	return 0;
+}
