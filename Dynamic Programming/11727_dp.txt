@@ -1,0 +1,32 @@
+/*
+
+https://www.acmicpc.net/problem/11727
+
+백준 온라인 저지 11727번: 2×n 타일링 2
+
+*/
+
+
+#include <iostream>
+#include <stdio.h>
+#define DIV 10007
+
+int main()
+{
+	int n;
+	long dp[1001];
+
+	scanf("%d", &n);
+
+	dp[1] = 1; 
+	dp[2] = 3; 
+
+	for (int i = 3; i <= n; i++) {
+		dp[i] = dp[i - 1] + 2 * dp[i - 2]; // i-1자리 타일링 경우 (맨 끝에 2*1 하나) + i-2자리 타일링 경우 2개 (맨 끝에 1*2 둘 + 2*2)
+		dp[i] %= DIV;
+	}
+
+	printf("%ld", dp[n]);
+
+	return 0;
+}

@@ -1,0 +1,52 @@
+/*
+
+https://www.acmicpc.net/problem/9465
+
+백준 온라인 저지 9465번: 스티커
+
+*/
+
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <stdio.h>
+#define CASE 100001
+
+using namespace std;
+
+int st[2][CASE]; // 스티커 점수 입력
+int dp[3][CASE]; // [0][i]: 선택 안 하는 경우, [1][i]: st[0][i] 선택하는 경우, 
+	        // [2][i]: st[1][i] 선택하는 경우
+
+int main()
+{
+	int T, n;
+	vector <int> result; // 결과값 저장
+
+	scanf("%d", &T);
+
+	for (int i = 0; i < T; i++) {
+		scanf("%d", &n);
+		for (int j = 0; j < 2; j++) {
+			for (int k = 0; k < n; k++) {
+				scanf("%d", &st[j][k]);
+			}
+		}
+		
+		for (int j = 1; j <= n; j++) {
+			dp[0][j] = max(max(dp[0][j-1], dp[1][j-1]), dp[2][j-1]); // j-1번째 경우에서 최댓값인 경우. 선택 안 하는 경우이므로, 이전 항이 어떤 항이든 상관 없음
+			dp[1][j] = max(dp[0][j-1], dp[2][j-1]) + st[0][j-1]; // j-1번째 경우에서 선택 안 하는 경우와 [1][j-1] 선택하는 경우 중 최댓값 + st[0][j-1] 점수값
+			dp[2][j] = max(dp[0][j-1], dp[1][j-1]) + st[1][j-1]; // j-1번째 경우에서 선택 안 하는 경우와 [0][j-1] 선택하는 경우 중 최댓값 + st[1][j-1] 점수값
+		}
+
+		int r = max(max(dp[0][n], dp[1][n]), dp[2][n]); // n번째 경우 중 최댓값
+		result.push_back(r);
+	}
+
+	int dsize = result.size();
+	for (int i = 0; i < dsize; i++)
+		printf("%d\n", result[i]);
+
+	return 0;
+}

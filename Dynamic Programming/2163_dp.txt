@@ -1,0 +1,29 @@
+/*
+
+https://www.acmicpc.net/problem/2163
+
+백준 온라인 저지 2163번: 초콜릿 자르기
+
+*/
+
+#include <iostream>
+#include <stdio.h>
+
+int main()
+{
+	int N, M;
+
+	scanf("%d %d", &N, &M);
+
+	printf("%d", N*M-1);
+
+	return 0;
+}
+
+/*
+ 1 2 3 4 5 ...
+ 2 3 5 7 9 ...
+ 3 5 8 11 14 ...
+ 4 7 11 15 19 ...
+ 5 9 14 19 24 ...
+*/

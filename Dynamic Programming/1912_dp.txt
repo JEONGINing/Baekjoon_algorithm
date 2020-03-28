@@ -1,0 +1,49 @@
+/*
+
+https://www.acmicpc.net/problem/1912
+
+백준 온라인 저지 1912번: 연속합
+
+*/
+
+
+#include <iostream>
+#include <stdio.h>
+#define MAX 100001
+
+using namespace std;
+
+int main()
+{
+	int n;
+	int arr[MAX], dp[MAX];
+
+	scanf("%d", &n);
+
+	for (int i = 0; i < n; i++)
+		scanf("%d", &arr[i]); // 입력값 저장
+
+	int ans; // 연속 최댓값 저장
+
+	for (int i = 0; i < n; i++) {
+
+		dp[i] = arr[i]; // dp에 i번째 수 넣어줌
+
+		if (i == 0) {
+			ans = dp[i]; // 첫번째 항으로 초기화
+			continue;
+		}
+
+		if (dp[i - 1] + arr[i] > dp[i]) // i-1번째까지 연속한 값에서 i번째를 더해준 값이 i번째 수보다 클 때
+			dp[i] = dp[i - 1] + arr[i]; // 계속 연속해준다
+
+		// 반대로 i-1번째까지 연속한 값에 i번째를 더한 수보다 i번째 수가 크면 그대로 둔다. (그 수에서 다시 시작)
+
+		if (ans < dp[i]) // 위 조건에 부합하는 dp[i]가 ans보다 클 때
+			ans = dp[i];  // ans값 갱신
+	}
+
+	printf("%d", ans);
+
+	return 0;
+}

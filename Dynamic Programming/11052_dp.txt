@@ -1,0 +1,55 @@
+/*
+
+https://www.acmicpc.net/problem/11052
+
+백준 온라인 저지 11052번: 카드 구매하기
+
+*/
+
+
+#include <iostream>
+#include <algorithm>
+#include <stdio.h>
+#define MAX 1001
+
+using namespace std;
+
+int main()
+{
+	int N;
+	int P[MAX], Pmax[MAX]; // N개짜리 카드팩 가격, 카드 N개 사는 최댓값 저장
+
+	scanf("%d", &N);
+
+	for (int i = 1; i <= N; i++)
+		scanf("%d", &P[i]);
+
+	Pmax[1] = P[1];
+
+	Pmax[2] = max(Pmax[1] + P[1], P[2]); // (1개 사는 최댓값 + 1개짜리 가격), 2개짜리 가격 중 최댓값
+	
+	Pmax[3] = max(Pmax[2] + P[1], P[3]); // (2개 사는 최댓값 + 1개짜리 가격), 3개짜리 가격 중 최댓값
+
+	int ms = 3; // 4개 사는 최댓값부터 구하기에 3부터 시작. i와 같이 증가해야 하기에 반복문 밖에서 선언
+
+	for (int i = 4; i <= N; i++) {
+		int t_ms = ms; // i-1라고 생각
+		int ps = 1;
+		int temp = Pmax[t_ms] + P[ps]; // t_ms개 사는 최댓값 + ps개짜리 가격 (t_ms + ps = i)
+		int tmax = temp; // 현재 최댓값
+
+		while (t_ms - 1 >= ps + 1) { // 조건 성립할 때
+			t_ms -= 1;
+			ps += 1; // 조건처럼 바꿔주고
+			temp = Pmax[t_ms] + P[ps]; // 여전히 t_ms+ps=i
+			tmax = max(tmax, temp); // 최댓값 갱신
+		}
+		tmax = max(tmax, P[i]); // i개짜리 가격과 마지막으로 비교하고 최댓값 갱신
+		Pmax[i] = tmax;
+		ms++; //
+	}
+
+	printf("%d", Pmax[N]);
+
+	return 0;
+}

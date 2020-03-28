@@ -1,0 +1,42 @@
+/*
+
+https://www.acmicpc.net/problem/9461
+
+백준 온라인 저지 9461번: 파도반 수열
+
+*/
+
+
+#include <iostream>
+#include <vector>
+#include <stdio.h>
+
+using namespace std;
+
+int main()
+{
+	int T, N, max = 0;
+	long long P[101]; // 파도반 수열 저장
+	vector <int> TC; // 테스트 케이스 저장
+	scanf("%d", &T);
+
+	for (int i = 0; i < T; i++) {
+		scanf("%d", &N);
+		TC.push_back(N);
+		if (max < N)
+			max = N; // 테스트 케이스 최댓값
+	}
+
+	P[0] = 0; P[1] = 1; P[2] = 1; 
+	P[3] = 1; P[4] = 2;
+
+	for (int i = 5; i <= max; i++) // 최댓값만큼만 구함
+		P[i] = P[i - 5] + P[i - 1]; // 그리다 보면 규칙 보임
+
+	for (int i = 0; i < T; i++) {
+		int idx = TC[i];
+		printf("%lld\n", P[idx]); // 테스트 케이스 불러와서 출력
+	}
+
+	return 0;
+}

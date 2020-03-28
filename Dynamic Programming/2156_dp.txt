@@ -1,0 +1,59 @@
+/*
+
+https://www.acmicpc.net/problem/2156
+
+백준 온라인 저지 2156번: 포도주 시식
+
+*/
+
+
+#include <iostream>
+#include <algorithm>
+#include <stdio.h>
+#define MAX 10001
+
+using namespace std;
+
+int main()
+{
+	int n;
+	int wine[MAX]; // 순서별 와인량 저장
+	int dp[MAX][3]; // dp[i][j]일 때, i번째 항에서 j번 연속해서 마실 때의 최댓값 (j가 0일 때는 안 마시는 경우)
+
+	scanf("%d", &n);
+
+	for (int i = 1; i <= n; i++)
+		scanf("%d", &wine[i]);
+
+	dp[1][0] = 0;
+	dp[1][1] = wine[1]; // 첫번째 항에서 1번 연속해서 마실 때 최댓값
+	dp[1][2] = 0;
+
+	dp[2][0] = wine[1]; // 두번째 항에서 안 마실 때 최댓값
+	dp[2][1] = wine[2]; // 두번째 항에서 1번 연속해서 마실 때 최댓값
+	dp[2][2] = wine[1] + wine[2]; // 두번째 항에서 2번 연속해서 마실 때 최댓값
+
+	int wMax = dp[2][2]; // 누적 최댓값
+	int tMax;
+
+	for (int i = 3; i <= n; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (j == 0) {
+				dp[i][j] = wMax; // 누적 최댓값 (i-1번째까지 왔을 때의 최댓값)
+			}
+			else if (j == 1) {
+				dp[i][j] = dp[i-1][0] + wine[i]; // i-1번째 항을 마시지 않을 때 최댓값 + i번째 와인량
+			}
+			else {
+				dp[i][j] = dp[i - 1][1] + wine[i]; // i-1번째 항을 마실 때 최댓값 + i번째 와인량
+			}
+		}
+
+		tMax = max(max(max(dp[i][0], dp[i][1]), dp[i][2]), wMax); // 누적 최댓값 갱신
+		wMax = tMax;
+	}
+
+	printf("%d", wMax); // n번째까지 왔을 때의 최댓값이므로
+
+	return 0;
+}
