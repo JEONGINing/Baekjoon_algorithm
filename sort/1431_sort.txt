@@ -1,0 +1,58 @@
+/*
+
+백준 온라인 저지 1431번: 시리얼 번호
+
+https://www.acmicpc.net/problem/1431
+
+*/
+
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int getSum(string a) {
+    int sum = 0;
+    for (int i=0; i<a.length(); i++) {
+        int temp = a[i] - '0';
+        if (temp >= 0 && temp <= 9)
+            sum += temp; // 숫자일 때만 더함
+    }
+    return sum;
+}
+
+bool compare(string a, string b) {
+    if (a.length() != b.length())
+        return a.length() < b.length(); // 길이 짧은 것부터
+    else {
+        int as = getSum(a);
+        int bs = getSum(b); // 길이 다르면 각 자리 숫자의 합
+        
+        if (as != bs)
+            return as < bs; // 합이 작은 것부터
+        else
+            return a < b; // 길이, 합 모두 같으면 사전 순으로
+    }
+}
+int main()
+{
+    int n, i;
+    string a;
+    vector <string> v;
+    
+    cin >> n;
+    
+    for (i=0; i<n; i++) {
+        cin >> a;
+        v.push_back(a);
+    }
+    
+    sort(v.begin(), v.end(), compare);
+    
+    for(i=0; i<n; i++)
+        cout << v[i] << '\n';
+    
+    return 0;
+}
