@@ -1,0 +1,32 @@
+/*
+
+백준 온라인 저지 10989번: 수 정렬하기 3
+
+https://www.acmicpc.net/problem/10989
+
+*/
+
+
+#include <stdio.h>
+
+int main()
+{
+    int n, i, temp;
+    int count[10001] = {0, };
+    
+    scanf("%d", &n);
+    
+    for (i=0; i<n; i++) {
+        scanf("%d", &temp);
+        count[temp]++; // 계수 정렬 사용
+    }
+    
+    for (i=0; i<10001; i++) {
+        while (count[i]) {
+            printf("%d\n",i);
+            count[i]--;
+        }
+    }
+    
+    return 0;
+}
